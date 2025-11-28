@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: quantum-ouija-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: API_KEY
+        generateValue: true
+      - key: QRNG_URL
+        value: https://qrng.anu.edu.au/API/jsonI.php

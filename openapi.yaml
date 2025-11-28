@@ -1,0 +1,86 @@
+openapi: 3.1.0
+info:
+  title: Quantum Ouija API
+  version: "1.0.0"
+servers:
+  - url: https://YOUR_DEPLOY_URL
+paths:
+  /message:
+    post:
+      operationId: spellMessage
+      summary: Compose a quantum message from QRNG symbols
+      security: [ { apiKeyAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                max_symbols: { type: integer, minimum: 1, maximum: 600, default: 120 }
+                stop_on:
+                  type: array
+                  items: { type: string, enum: [".","!","?"] }
+                  default: ["."]
+                min_word_len: { type: integer, minimum: 1, maximum: 12, default: 1 }
+      responses:
+        "200":
+          description: Message + steps
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  steps:
+                    type: array
+                    items: { type: string }
+                  raw_bytes:
+                    type: array
+                    items: { type: integer }
+  /letters:
+    post:
+      operationId: drawLetters
+      summary: Draw quantum-random Ouija symbols
+      security: [ { apiKeyAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                n: { type: integer, minimum: 1, maximum: 500, default: 60 }
+      responses:
+        "200":
+          description: Symbols
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbols:
+                    type: array
+                    items: { type: string }
+                  raw_bytes:
+                    type: array
+                    items: { type: integer }
+  /healthz:
+    get:
+      operationId: healthz
+      summary: Health check
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
